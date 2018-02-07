@@ -18,7 +18,7 @@ app.on('ready', () => {
     }));
 
     // open js console, inspectror, network and so on..
-    //browser_window.webContents.openDevTools();
+    browser_window.webContents.openDevTools();
 
     browser_window.on('closed', () => {
         browser_window = null
