@@ -7,7 +7,8 @@
       "email": "oleh.kurpiak@gmail.com"
     },
     {
-      "name": "Vitaliy Mogolivsky"
+      "name": "Vitalii Moholivskyi",
+      "email": "mogolivskiy@gmail.com"
     }
   ],
   "description": "Timetable app to manage schedule of all faculties",
@@ -15,7 +16,8 @@
   "main": "index.js",
   "scripts": {
     "run": "electron .",
-    "package-win": "electron-packager . timatable --overwrite --asar=true --platform=win32 --arch=ia32 --prune=true --out=builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Timetable\""
+    "package-win": "electron-packager . timatable --overwrite --asar=true --platform=win32 --arch=ia32 --prune=true --out=builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Timetable\"",
+    "package-linux": "electron-packager . timatable --overwrite --asar=true --platform=linux --arch=ia32 --prune=true --out=builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Timetable\""
   },
   "devDependencies": {
     "electron": "^1.7.8",

@@ -1,81 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Timetable</title>
+    <title>Timetable</title>
 </head>
 <body>
 
 <h1>Awesome timetable app</h1>
+<div>
+    <button id="select-timetable-file-button">Open File</button>
+    <p id="selected-file"></p>
+    <button id="parse-timetable-file-button">Parse</button>
+    <p id="selected-save-path"></p>
+</div>
 <script>
-	const xlsx = require('node-xlsx').default;
 
-	process_timetable(`${__dirname}/../../example.xlsx`);
+  const {ipcRenderer} = require('electron');
+  const TimetableParser = require('../lib/timetable_parser');
+  const timetableParser = new TimetableParser();
+  let selectedPath;
+
+  const selectFileBtn = document.getElementById('select-timetable-file-button');
+
+  selectFileBtn.addEventListener('click', function (event) {
+    ipcRenderer.send('open-file-dialog')
+  });
+
+  ipcRenderer.on('selected-file', function (event, paths) {
+    selectedPath = paths[0];
+    document.getElementById('selected-file').innerHTML = `You selected: ${selectedPath}`
+  });
 
 
-    function process_timetable(file_path) {
-        const full_file = xlsx.parse(file_path);
-        let sheet_data = full_file[0].data;
+  const parseFileBtn = document.getElementById('parse-timetable-file-button');
 
-        // assume that part of excel, where schedule is located
-        // starting from 10 row
-        sheet_data.splice(0, 10);
+  parseFileBtn.addEventListener('click', function (event) {
+    ipcRenderer.send('save-dialog');
+  });
 
-        let result = [],
-            // not all records contains day and time
-            // if not, this means that the row time and day
-            // the same as the previous
-            last_day = sheet_data[0][0],
-            last_time = sheet_data[0][1];
-
-        for (let i = 0; i < sheet_data.length; ++i) {
-            let row = sheet_data[i];
-
-            if (!row[0]) {
-                row[0] = last_day;
-            } else {
-                last_day = row[0];
-            }
-
-            if (!row[1]) {
-                row[1] = last_time;
-            } else {
-                last_time = row[1];
-            }
-
-            if (!row[2]) {
-                // empty row
-                continue;
-            }
-
-            let is_lecture = (row[4] + '').toLowerCase().trim() === 'лекція';
-
-            result.push({
-                day: row[0],
-                time: row[1],
-                subject: row[2],
-                teacher: row[3],
-                type: is_lecture ? 'лекція' : 'семінар/практика',
-                group: is_lecture ? null : row[4],
-                weeks: row[5],
-                classroom: row[6]
-            });
-        }
-
-        console.log(result);
-        export_json_to_file(result);
+  ipcRenderer.on('saved-file', function (event, path) {
+    if (!path) path = 'No path';
+    document.getElementById('selected-save-path').innerHTML = path ? `File will be saved to: ${path}` : 'Save path was not selected, please try again';
+    if (path) {
+      const json = timetableParser.process_timetable(selectedPath);
+      export_json_to_file(json, path);
     }
+  });
 
-    function export_json_to_file(data) {
-        const jsonfile = require('jsonfile');
+  //timetableParser.process_timetable(`${__dirname}/../../example.xlsx`);
 
-        jsonfile.writeFile(`${__dirname}/../../export.json`, data, { spaces: 4 }, function(err) {
-            if (err) {
-                console.error(err);
-            } else {
-                console.log('result exported to file [export.json] in root directory');
-            }
-        })
-    }
+  function export_json_to_file(data, path) {
+    const jsonfile = require('jsonfile');
+
+    jsonfile.writeFile(path, data, {spaces: 4}, function (err) {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('result exported to file [export.json] in root directory');
+      }
+    })
+  }
 </script>
 </body>
 </html>
