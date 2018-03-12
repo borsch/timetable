@@ -1,64 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="timeTableApp">
 <head>
+    <meta charset="UTF-8">
     <title>Timetable</title>
+    <link rel="stylesheet" href="../app/css/index.css" type="text/css">
+    <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../bower_components/angular-bootstrap/ui-bootstrap-csp.css" rel="stylesheet">
 </head>
-<body>
+<body ng-controller="mainCtrl as ctrl">
 
-<h1>Awesome timetable app</h1>
-<div>
-    <button id="select-timetable-file-button">Open File</button>
-    <p id="selected-file"></p>
-    <button id="parse-timetable-file-button">Parse</button>
-    <p id="selected-save-path"></p>
+<div class="container-fluid">
+    <div class="row">
+        <h1>{{appTitle}}</h1>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <uib-tabset active="activeJustified">
+                <uib-tab index="0" heading="Методист">
+                    <div class="row">
+                        <div class="col-4">
+                            <button id="select-timetable-file-button"
+                                    ng-click="selectFile()">
+                                Open File
+                            </button>
+                        </div>
+                        <div class="col-8">
+                            <p id="selected-file">{{selectedFilePath}}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <button id="parse-timetable-file-button"
+                                    ng-click="saveFile()">
+                                Parse
+                            </button>
+                        </div>
+                        <div class="col-8">
+                            <p id="selected-save-path">{{selectedSavePath}}</p>
+                        </div>
+                    </div>
+                </uib-tab>
+
+                <uib-tab index="1" heading="Методист|Лаборант">
+                    2
+                </uib-tab>
+
+                <uib-tab index="2" heading="Викладач">
+                    3
+                </uib-tab>
+
+                <uib-tab index="3" heading="Студент">
+                    4
+                </uib-tab>
+
+                <uib-tab index="4" heading="Викладач|Студент">
+                    5
+                </uib-tab>
+            </uib-tabset>
+        </div>
+
+    </div>
 </div>
+
 <script>
-
-  const {ipcRenderer} = require('electron');
-  const TimetableParser = require('../lib/timetable_parser');
-  const timetableParser = new TimetableParser();
-  let selectedPath;
-
-  const selectFileBtn = document.getElementById('select-timetable-file-button');
-
-  selectFileBtn.addEventListener('click', function (event) {
-    ipcRenderer.send('open-file-dialog')
-  });
-
-  ipcRenderer.on('selected-file', function (event, paths) {
-    selectedPath = paths[0];
-    document.getElementById('selected-file').innerHTML = `You selected: ${selectedPath}`
-  });
-
-
-  const parseFileBtn = document.getElementById('parse-timetable-file-button');
-
-  parseFileBtn.addEventListener('click', function (event) {
-    ipcRenderer.send('save-dialog');
-  });
-
-  ipcRenderer.on('saved-file', function (event, path) {
-    if (!path) path = 'No path';
-    document.getElementById('selected-save-path').innerHTML = path ? `File will be saved to: ${path}` : 'Save path was not selected, please try again';
-    if (path) {
-      const json = timetableParser.process_timetable(selectedPath);
-      export_json_to_file(json, path);
-    }
-  });
-
-  //timetableParser.process_timetable(`${__dirname}/../../example.xlsx`);
-
-  function export_json_to_file(data, path) {
-    const jsonfile = require('jsonfile');
-
-    jsonfile.writeFile(path, data, {spaces: 4}, function (err) {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log('result exported to file [export.json] in root directory');
-      }
-    })
-  }
+  require('angular');
+  require('angular-ui-bootstrap');
+  require('../app/index.js');
 </script>
 </body>
 </html>

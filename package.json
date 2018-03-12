@@ -20,10 +20,13 @@
     "package-linux": "electron-packager . timatable --overwrite --asar=true --platform=linux --arch=ia32 --prune=true --out=builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Timetable\""
   },
   "devDependencies": {
+    "bower": "^1.8.2",
     "electron": "^1.7.8",
     "electron-packager": "^8.1.0"
   },
   "dependencies": {
+    "angular": "^1.5.6",
+    "angular-ui-bootstrap": "^2.5.6",
     "jsonfile": "^4.0.0",
     "node-xlsx": "^0.11.2"
   }

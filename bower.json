@@ -1,0 +1,23 @@
+{
+  "name": "timetable",
+  "description": "Timetable app to manage schedule of all faculties",
+  "main": "index.js",
+  "authors": [
+    "[object Object]",
+    "[object Object]"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/borsch/timetable",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^4.0.0",
+    "angular-bootstrap": "^2.5.0"
+  }
+}
