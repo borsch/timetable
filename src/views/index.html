@@ -7,7 +7,7 @@
     <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../../bower_components/angular-bootstrap/ui-bootstrap-csp.css" rel="stylesheet">
 </head>
-<body ng-controller="mainCtrl as ctrl">
+<body ng-controller="mainCtrl">
 
 <div class="container-fluid">
     <div class="row">
@@ -17,27 +17,21 @@
         <div class="col-12">
             <uib-tabset active="activeJustified">
                 <uib-tab index="0" heading="Методист">
-                    <div class="row">
-                        <div class="col-4">
-                            <button id="select-timetable-file-button"
-                                    ng-click="selectFile()">
-                                Open File
-                            </button>
+                    <div class="row control-row">
+                        <div class="col-2">
+                            <button ng-click="selectFile()" class="btn btn-success">Open File</button>
                         </div>
-                        <div class="col-8">
-                            <p id="selected-file">{{selectedFilePath}}</p>
+                        <div class="col-10">
+                            {{selectedFilePath}}
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-4">
-                            <button id="parse-timetable-file-button"
-                                    ng-click="saveFile()">
-                                Parse
-                            </button>
+                    <div class="row control-row">
+                        <div class="col-2">
+                            <button ng-click="saveFile()" class="btn btn-info">Parse</button>
                         </div>
-                        <div class="col-8">
-                            <p id="selected-save-path">{{selectedSavePath}}</p>
+                        <div class="col-10">
+                            {{selectedSavePath}}
                         </div>
                     </div>
                 </uib-tab>
