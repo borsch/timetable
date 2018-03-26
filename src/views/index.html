@@ -28,11 +28,42 @@
 
                     <div class="row control-row">
                         <div class="col-2">
-                            <button ng-click="saveFile()" class="btn btn-info">Parse</button>
+                            <button ng-click="exportJson()" class="btn btn-info">Export to json</button>
                         </div>
                         <div class="col-10">
                             {{selectedSavePath}}
                         </div>
+                    </div>
+
+                    <div class="row" ng-if="schedule">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Час</th>
+                                    <th>Дисципліна</th>
+                                    <th>Викладач</th>
+                                    <th>Група</th>
+                                    <th>Тижні</th>
+                                    <th>Аудиторія</th>
+                                </tr>
+                            </thead>
+                            <tbody ng-repeat="subject in schedule">
+                                <tr>
+                                    <td>
+                                        {{subject.day}}
+                                    </td>
+                                    <td>
+                                        {{subject.time}}
+                                    </td>
+                                    <td>{{subject.subject}}</td>
+                                    <td>{{subject.teacher}}</td>
+                                    <td>{{subject.group}}</td>
+                                    <td>{{subject.weeks}}</td>
+                                    <td>{{subject.classroom}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </uib-tab>
 

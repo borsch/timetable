@@ -51,7 +51,6 @@ module.exports = class TimetableParser {
       });
     }
 
-    console.log(result);
     return result;
   }
 };
