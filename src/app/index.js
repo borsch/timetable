@@ -4,82 +4,86 @@ const tabs = require('angular-ui-bootstrap/src/tabs');
 const {ipcRenderer} = require('electron');
 const TimetableParser = require('../lib/timetable_parser');
 const timetableParser = new TimetableParser();
+const FILE_TYPE_VALIDATION_REGEXP = /.*\.(xlsx|xls|doc|docx)$/;
 
 const DAYS = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П`ятниця', 'Субота'];
 const TIME = ['8:30-9:50', '10:00-11:20', '11:40-13:00', '13:30-14:50', '15:00-16:20', '16:30-17:50', '18:00-19:20'];
 
 angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http', ($scope, $http) => {
-    let selectedPath;
+  let selectedPath;
 
-    $scope.appTitle = 'Awesome timetable app';
-    $scope.schedule = null;
-    $scope.possibleClassesTime = TIME;
-    $scope.possibleDay = DAYS;
+  $scope.appTitle = 'Awesome timetable app';
+  $scope.schedule = null;
+  $scope.possibleClassesTime = TIME;
+  $scope.possibleDay = DAYS;
 
-    $scope.isDayHasLessonsAtTime = function(day, hour) {
-        return !!day[hour];
-    };
+  $scope.isDayHasLessonsAtTime = function (day, hour) {
+    return !!day[hour];
+  };
 
-    $scope.selectFile = function () {
-        ipcRenderer.send('open-file-dialog');
-    };
+  $scope.selectFile = function () {
+    ipcRenderer.send('open-file-dialog');
+  };
 
-    $scope.exportJson = function () {
-        if (selectedPath) {
-            ipcRenderer.send('save-dialog');
-        }
-    };
+  $scope.exportJson = function () {
+    if (selectedPath) {
+      ipcRenderer.send('save-dialog');
+    }
+  };
 
-    ipcRenderer.on('selected-file', function (event, paths) {
-        let valid = true;
-        selectedPath = paths[0];
+  ipcRenderer.on('selected-file', function (event, paths) {
+    let valid = true;
+    selectedPath = paths[0];
 
-        if (!selectedPath.endsWith('.xlsx') && !selectedPath.endsWith('.xls')) {
-            valid = false;
-            selectedPath = null;
-        }
-
-        $scope.$apply(function(){
-            if (valid) {
-                const json = timetableParser.process_timetable(selectedPath);
-
-                $scope.selectedFilePath = `You selected: ${selectedPath}`;
-                $scope.schedule = prepare_exported_schedule(json);
-            } else {
-                $scope.selectedFilePath = 'Supported only Excel files';
-            }
-
-            $scope.selectedSavePath = '';
-        });
-    });
-
-    ipcRenderer.on('saved-file', function (event, path) {
-        $scope.$apply(function(){
-            $scope.selectedSavePath = path ? `File will be saved to: ${path}` : 'Save path was not selected, please try again';
-        });
-
-        if (path) {
-            const json = timetableParser.process_timetable(selectedPath);
-            export_json_to_file(json, path);
-        }
-    });
-
-    function export_json_to_file(data, path) {
-        const jsonfile = require('jsonfile');
-
-        jsonfile.writeFile(path, data, {spaces: 4}, function(){ });
+    if (!FILE_TYPE_VALIDATION_REGEXP.test(selectedPath)) {
+      valid = false;
+      selectedPath = null;
     }
 
-    function prepare_exported_schedule(json) {
-        json.sort(function(a, b){
-            let cmp = DAYS.indexOf(a.day) - DAYS.indexOf(b.day);
-
-            if (cmp !== 0)
-                return cmp;
-
-            return TIME.indexOf(a.time) - TIME.indexOf(b.time);
+    $scope.$apply(function () {
+      if (valid) {
+        timetableParser.process_timetable(selectedPath).then((json) => {
+          $scope.selectedFilePath = `You selected: ${selectedPath}`;
+          $scope.schedule = prepare_exported_schedule(json);
         });
 
-        return json;
+      } else {
+        $scope.selectedFilePath = 'Supported only Excel and Word files';
+      }
+
+      $scope.selectedSavePath = '';
+    });
+  });
+
+  ipcRenderer.on('saved-file', function (event, path) {
+    $scope.$apply(function () {
+      $scope.selectedSavePath = path ? `File will be saved to: ${path}` : 'Save path was not selected, please try again';
+    });
+
+    if (path) {
+      const json = timetableParser.process_timetable(selectedPath).then((json) => {
+        export_json_to_file(json, path);
+      });
     }
+  });
+
+  function export_json_to_file(data, path) {
+    const jsonfile = require('jsonfile');
+
+    jsonfile.writeFile(path, data, {spaces: 4}, function () {
+    });
+  }
+
+  function prepare_exported_schedule(json) {
+    json.sort(function (a, b) {
+      let cmp = DAYS.indexOf(a.day) - DAYS.indexOf(b.day);
+
+      if (cmp !== 0)
+        return cmp;
+
+      return TIME.indexOf(a.time) - TIME.indexOf(b.time);
+    });
+
+    return json;
+  }
 }]);
