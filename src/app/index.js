@@ -40,20 +40,23 @@ angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http'
       selectedPath = null;
     }
 
-    $scope.$apply(function () {
       if (valid) {
         timetableParser.process_timetable(selectedPath).then((json) => {
-          $scope.selectedFilePath = `You selected: ${selectedPath}`;
-          $scope.schedule = prepare_exported_schedule(json);
+          $scope.$apply(function () {
+            $scope.selectedFilePath = `You selected: ${selectedPath}`;
+            $scope.schedule = prepare_exported_schedule(json);
+          });
         });
 
       } else {
-        $scope.selectedFilePath = 'Supported only Excel and Word files';
+        $scope.$apply(function () {
+          $scope.selectedFilePath = 'Supported only Excel and Word files';
+        });
       }
 
       $scope.selectedSavePath = '';
     });
-  });
+
 
   ipcRenderer.on('saved-file', function (event, path) {
     $scope.$apply(function () {
