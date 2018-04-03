@@ -60,6 +60,11 @@ angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http'
                       $scope.schedule = null;
                   });
               }
+            }).catch(function(){
+              $scope.$apply(function () {
+                $scope.selectedFilePath = `Файли не містить розкладу або розклад неправильно форматований`;
+                $scope.schedule = null;
+              });
             });
         } catch (e) {
             $scope.$apply(function () {
