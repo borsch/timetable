@@ -1,6 +1,7 @@
 const {app, BrowserWindow, ipcMain, dialog} = require('electron');
 const url = require('url');
 const path = require('path');
+const config = require('electron-node-config');
 let browser_window;
 
 app.on('ready', () => {
@@ -16,8 +17,10 @@ app.on('ready', () => {
     slashes: true
   }));
 
-  // open js console, inspectror, network and so on..
-  browser_window.webContents.openDevTools();
+  if (config.get('dev_tools')) {
+      // open js console, inspectror, network and so on..
+      browser_window.webContents.openDevTools();
+  }
 
   browser_window.on('closed', () => {
     browser_window = null
