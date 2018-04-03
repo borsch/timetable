@@ -6,10 +6,10 @@ const TimetableParser = require('../lib/timetable_parser');
 const timetableParser = new TimetableParser();
 const FILE_TYPE_VALIDATION_REGEXP = /.*\.(xlsx|xls|doc|docx)$/;
 
-const DAYS = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П`ятниця', 'Субота'];
-const TIME = ['8:30-9:50', '10:00-11:20', '11:40-13:00', '13:30-14:50', '15:00-16:20', '16:30-17:50', '18:00-19:20'];
+const DAYS = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П`ятниця', 'П\'ятниця', 'Субота', 'Cубота', 'Неділя', 'Неділя '];
+const TIME = ['8:30-9:50', '10:00-11:20', '11:40-13:00', '13:30-14:50', '15:00-16:20', '15.00-16.30', '16:30-17:50', '18:00-19:20'];
 
-angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http', ($scope, $http) => {
+angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http', ($scope) => {
   let selectedPath;
 
   $scope.appTitle = 'Awesome timetable app';
