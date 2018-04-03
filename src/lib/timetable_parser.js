@@ -5,7 +5,13 @@ module.exports = class TimetableParser {
 
   constructor() {
     this.xlsTimetableParser = new XlsTimetableParser();
-    this.cocTimetableParser = new DocTimetableParser();
+    this.docTimetableParser = new DocTimetableParser();
+    this.FILE_TYPE_PARSER_MAP = {
+      'xls': this.xlsTimetableParser,
+      'xlsx': this.xlsTimetableParser,
+      'doc': this.docTimetableParser,
+      'docx': this.docTimetableParser
+    };
   }
 
   process_timetable(file_path) {
@@ -37,13 +43,7 @@ module.exports = class TimetableParser {
   }
 
   _get_parser(file_type) {
-    const FILE_TYPE_PARSER_MAP = {
-        'xls': this.xlsTimetableParser,
-        'xlsx': this.xlsTimetableParser,
-        'doc': this.cocTimetableParser,
-        'docx': this.cocTimetableParser
-    };
-    return FILE_TYPE_PARSER_MAP[file_type];
+    return this.FILE_TYPE_PARSER_MAP[file_type];
   }
 
   _process_weeks(weeks) {
