@@ -19,16 +19,20 @@
                 <uib-tab index="0" heading="Методист">
                     <div class="row control-row">
                         <div class="col-2">
-                            <button ng-click="selectFile()" class="btn btn-success">Open File</button>
+                            <button ng-click="selectFile()" class="btn btn-success">Відприки файл розкладу</button>
                         </div>
                         <div class="col-10">
                             {{selectedFilePath}}
                         </div>
                     </div>
-
                     <div class="row control-row">
                         <div class="col-2">
-                            <button ng-click="exportJson()" class="btn btn-info">Export to json</button>
+                            <button ng-click="reset_state()" class="btn btn-info">Скинути</button>
+                        </div>
+                    </div>
+                    <div class="row control-row">
+                        <div class="col-2">
+                            <button ng-click="exportJson()" class="btn btn-info">Експортувати в JSON файл</button>
                         </div>
                         <div class="col-10">
                             {{selectedSavePath}}

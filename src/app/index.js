@@ -12,7 +12,7 @@ const TIME = ['8:30-9:50', '10:00-11:20', '11:40-13:00', '13:30-14:50', '15:00-1
 angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http', ($scope) => {
   let selectedPath;
 
-  $scope.appTitle = 'Awesome timetable app';
+  $scope.appTitle = 'Парсер розкладу';
   $scope.schedule = null;
   $scope.possibleClassesTime = TIME;
   $scope.possibleDay = DAYS;
@@ -31,6 +31,12 @@ angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http'
     }
   };
 
+  $scope.reset_state = function() {
+    $scope.schedule = null;
+    $scope.selectedFilePath = null;
+      $scope.selectedSavePath = null;
+  };
+
   ipcRenderer.on('selected-file', function (event, paths) {
     let valid = true;
     selectedPath = paths[0];
@@ -41,16 +47,29 @@ angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http'
     }
 
       if (valid) {
-        timetableParser.process_timetable(selectedPath).then((json) => {
-          $scope.$apply(function () {
-            $scope.selectedFilePath = `You selected: ${selectedPath}`;
-            $scope.schedule = prepare_exported_schedule(json);
-          });
-        });
-
+        try {
+            timetableParser.process_timetable(selectedPath).then((json) => {
+              if (json && json.length) {
+                  $scope.$apply(function () {
+                      $scope.selectedFilePath = `Ви вибрали: ${selectedPath}`;
+                      $scope.schedule = prepare_exported_schedule(json);
+                  });
+              } else {
+                  $scope.$apply(function () {
+                      $scope.selectedFilePath = `Файли не містить розкладу або розклад неправильно форматований`;
+                      $scope.schedule = null;
+                  });
+              }
+            });
+        } catch (e) {
+            $scope.$apply(function () {
+                $scope.selectedFilePath = `Файли не містить розкладу або розклад неправильно форматований`;
+                $scope.schedule = null;
+            });
+        }
       } else {
         $scope.$apply(function () {
-          $scope.selectedFilePath = 'Supported only Excel and Word files';
+          $scope.selectedFilePath = 'Підтримується тільки формати файлів Word та Excel';
         });
       }
 
@@ -60,13 +79,13 @@ angular.module('timeTableApp', [tabs]).controller('mainCtrl', ['$scope', '$http'
 
   ipcRenderer.on('saved-file', function (event, path) {
     $scope.$apply(function () {
-      $scope.selectedSavePath = path ? `File will be saved to: ${path}` : 'Save path was not selected, please try again';
+      $scope.selectedSavePath = path ? `Файл буде збережено в: ${path}` : 'Виберіть будь ласка місце, куди треба зберегти файл';
     });
 
     if (path) {
       const json = timetableParser.process_timetable(selectedPath).then((json) => {
         export_json_to_file(json, path);
-      });
+      })
     }
   });
 
