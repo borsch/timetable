@@ -28,11 +28,12 @@
     "angular": "^1.5.6",
     "angular-ui-bootstrap": "^2.5.6",
     "cheerio": "^1.0.0-rc.2",
+    "electron-node-config": "^1.1.0",
     "jsdom": "^11.6.2",
     "jsonfile": "^4.0.0",
     "mammoth": "^1.4.4",
     "node-xlsx": "^0.11.2",
-    "tabletojson": "^0.7.1",
-    "electron-node-config": "^1.1.0"
+    "seraph-model": "^0.10.1",
+    "tabletojson": "^0.7.1"
   }
 }
