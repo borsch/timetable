@@ -8,6 +8,7 @@ const TimetableParser = require('../lib/timetable_parser');
 const timetableParser = new TimetableParser();
 const TimetableExporter = require('../lib/timetable_exporter');
 const timetableExporter = new TimetableExporter();
+const database = require('../lib/database');
 
 const FILE_TYPE_VALIDATION_REGEXP = /.*\.(xlsx|xls|doc|docx)$/;
 
@@ -49,6 +50,8 @@ const timeTableApp = angular.module('timeTableApp', [tabs, 'datatables']).contro
     if ($scope.ctrl.timetableFrom.$valid && $scope.schedule && !$scope.conflictsInTimetable) {
       $scope.timetable.schedule = $scope.schedule;
       $scope.timetables.push($scope.timetable);
+
+      database.save_schedule([$scope.timetable]);
       //$scope.resetTimetableForm();
     }
   };
@@ -62,6 +65,8 @@ const timeTableApp = angular.module('timeTableApp', [tabs, 'datatables']).contro
       return another.day === subject.day
         && another.time === subject.time
         && another.subject === subject.subject
+        && another.teacher === subject.teacher
+        && another.classroom === subject.classroom
         && doesWeeksOverlap;
     });
     const doesConflicts = sameSubjects.length > 1;
