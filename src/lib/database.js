@@ -28,9 +28,12 @@ module.exports.save_schedule = function(schedules){
             schedule.schedule.forEach(async function(item){
                 let teacher_promise = teachers[item.teacher];
                 if (!teacher_promise) {
+                    teachers[item.teacher] = {name: item.teacher};
+
                     teacher_promise = await new Promise(function (resolve) {
-                        Teacher.save({name: item.teacher}, (error, saved) => {
+                        Teacher.save(teachers[item.teacher], (error, saved) => {
                             if (saved) {
+                                teachers[item.teacher].id = saved.id;
                                 db.relate(faculty_s, 'belongs', saved, function () {
                                     resolve(saved);
                                 });
@@ -41,9 +44,12 @@ module.exports.save_schedule = function(schedules){
 
                 let auditorium_promise = auditoriums[item.classroom];
                 if (!auditorium_promise) {
+                    auditoriums[item.classroom] = {corps: item.corps, room: item.room};
+
                     auditorium_promise = await new Promise(function(resolve){
-                        Auditorium.save({corps: item.corps, room: item.room}, (error, saved) => {
+                        Auditorium.save(auditoriums[item.classroom], (error, saved) => {
                             if (saved) {
+                                auditoriums[item.classroom].id = saved.id;
                                 db.relate(faculty_s, 'belongs', saved, function(){
                                     resolve(saved);
                                 });
