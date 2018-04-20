@@ -1,3 +1,7 @@
 .control-row {
     margin-bottom: 10px;
 }
+
+.red {
+    background-color: red;
+}
