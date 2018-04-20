@@ -104,7 +104,7 @@ class TimetableExporter {
           const id = `${day}, \n${time}`;
 
           const dayTime = {
-            id: `${day}, \n${time}`,
+            id: `${day}, \n${time}, \n${classRoom}`,
             day,
             time,
             classRoom,
