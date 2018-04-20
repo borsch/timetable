@@ -6,69 +6,202 @@
     <link rel="stylesheet" href="../app/css/index.css" type="text/css">
     <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../../bower_components/angular-bootstrap/ui-bootstrap-csp.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../bower_components/angular-datatables/dist/css/angular-datatables.min.css">
 </head>
-<body ng-controller="mainCtrl">
+<body ng-controller="mainCtrl as ctrl">
 
-<div class="container-fluid">
+<div class="container">
     <div class="row">
-        <h1>{{appTitle}}</h1>
+        <h2>{{appTitle}}</h2>
     </div>
     <div class="row">
         <div class="col-12">
             <uib-tabset active="activeJustified">
                 <uib-tab index="0" heading="Методист">
+                    <h3>Додавання розкладу</h3>
                     <div class="row control-row">
-                        <div class="col-3">
-                            <button ng-click="selectFile()" class="btn btn-success">Відкрики файл розкладу</button>
+                        <div class="col-12">
+                            <form name="ctrl.timetableFrom">
+                                <div class="form-group row">
+                                    <div class="col-8">
+                                        <div class="form-group">
+                                            <label for="timetableFaculty">Факультет</label>
+                                            <input ng-model="timetable.faculty"
+                                                   ng-required="true"
+                                                   class="form-control"
+                                                   id="timetableFaculty">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="timetableSpeciality">Спеціальність</label>
+                                            <input ng-model="timetable.speciality"
+                                                   ng-required="true"
+                                                   class="form-control"
+                                                   id="timetableSpeciality">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="timetableYear">Рік</label>
+                                            <input ng-model="timetable.year"
+                                                   ng-required="true"
+                                                   type="number" class="form-control"
+                                                   id="timetableYear">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="timetableTerm">Триместр</label>
+                                            <select ng-model="timetable.term"
+                                                    ng-init="timetable.term = '1'"
+                                                    id="timetableTerm" class="custom-select">
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">2д</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="timetableYear">Рік Навчання</label>
+                                            <input ng-model="timetable.yearOfStudy"
+                                                   ng-required="true"
+                                                   type="number" class="form-control"
+                                                   id="timetableYearOfStudy">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6">
+                                        <button ng-click="selectFile()" class="btn btn-sm btn-success">Відкрики файл
+                                            розкладу
+                                        </button>
+                                        <button ng-click="reset_state()" class="btn btn-sm btn-info">Скинути</button>
+                                    </div>
+                                    <div class="col-6">
+                                        {{selectedFilePath}}
+                                    </div>
+                                </div>
+                                <div class="row" ng-if="schedule">
+                                    <h4>Попередній перегляд</h4>
+                                    <table datatable="" class="row-border hover">
+                                        <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Час</th>
+                                            <th>Дисципліна</th>
+                                            <th>Викладач</th>
+                                            <th>Група</th>
+                                            <th>Тижні</th>
+                                            <th>Аудиторія</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="subject in schedule"
+                                            ng-class="{red: doesConflicts(subject)}"
+                                        >
+                                            <td>
+                                                {{subject.day}}
+                                            </td>
+                                            <td>
+                                                {{subject.time}}
+                                            </td>
+                                            <td>{{subject.subject}}</td>
+                                            <td>{{subject.teacher}}</td>
+                                            <td>{{subject.group}}</td>
+                                            <td>{{subject.weeks}}</td>
+                                            <td>{{subject.classroom}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!--<div class="form-group row">
+                                    <div class="col-3">
+                                        <button ng-click="exportJson()" class="btn btn-info">Експортувати в JSON файл
+                                        </button>
+                                    </div>
+                                    <div class="col-9">
+                                        {{selectedSavePath}}
+                                    </div>
+                                </div>-->
+
+                                <button ng-click="resetTimetableForm()"
+                                        class="btn btn-primary">Скинути
+                                </button>
+                                <button ng-click="addTimetable()"
+                                        type="submit"
+                                        class="btn btn-primary">Додати
+                                </button>
+                            </form>
+
                         </div>
-                        <div class="col-9">
-                            {{selectedFilePath}}
+
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h3>Завантажені розклади</h3>
                         </div>
                     </div>
-                    <div class="row control-row">
-                        <div class="col-3">
-                            <button ng-click="reset_state()" class="btn btn-info">Скинути</button>
+                    <div class="row">
+                        <div class="col-12">
+                            <table datatable="" class="row-border hover">
+                                <thead>
+                                <tr>
+                                    <th>Факультет</th>
+                                    <th>Спеціальність</th>
+                                    <th>Рік</th>
+                                    <th>Триместр</th>
+                                    <th>Рік Навчання</th>
+                                    <th>Попередній перегляд</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="timetable in timetables">
+                                    <td>{{timetable.faculty}}</td>
+                                    <td>{{timetable.speciality}}</td>
+                                    <td>{{timetable.year}}</td>
+                                    <td>{{timetable.term}}</td>
+                                    <td>{{timetable.yearOfStudy}}</td>
+                                    <td>
+                                        <div class="row"
+                                             ng-if="timetable.schedule">
+                                            <table datatable="" class="row-border hover">
+                                                <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Час</th>
+                                                    <th>Дисципліна</th>
+                                                    <th>Викладач</th>
+                                                    <th>Група</th>
+                                                    <th>Тижні</th>
+                                                    <th>Аудиторія</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr ng-repeat="subject in timetable.schedule"
+                                                    ng-class="{red: doesConflicts(subject)}"
+                                                >
+                                                    <td>
+                                                        {{subject.day}}
+                                                    </td>
+                                                    <td>
+                                                        {{subject.time}}
+                                                    </td>
+                                                    <td>{{subject.subject}}</td>
+                                                    <td>{{subject.teacher}}</td>
+                                                    <td>{{subject.group}}</td>
+                                                    <td>{{subject.weeks}}</td>
+                                                    <td>{{subject.classroom}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="row control-row">
-                        <div class="col-3">
-                            <button ng-click="exportJson()" class="btn btn-info">Експортувати в JSON файл</button>
-                        </div>
-                        <div class="col-9">
-                            {{selectedSavePath}}
+                    <div class="row">
+                        <div class="col-6">
+                            <button ng-click="exportTimetables()" class="btn btn-sm btn-success">Зберегти Розклад зайнятості
+                            </button>
                         </div>
                     </div>
 
-                    <div class="row" ng-if="schedule">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Час</th>
-                                    <th>Дисципліна</th>
-                                    <th>Викладач</th>
-                                    <th>Група</th>
-                                    <th>Тижні</th>
-                                    <th>Аудиторія</th>
-                                </tr>
-                            </thead>
-                            <tbody ng-repeat="subject in schedule">
-                                <tr>
-                                    <td>
-                                        {{subject.day}}
-                                    </td>
-                                    <td>
-                                        {{subject.time}}
-                                    </td>
-                                    <td>{{subject.subject}}</td>
-                                    <td>{{subject.teacher}}</td>
-                                    <td>{{subject.group}}</td>
-                                    <td>{{subject.weeks}}</td>
-                                    <td>{{subject.classroom}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </uib-tab>
 
                 <uib-tab index="1" heading="Методист|Лаборант">
@@ -91,10 +224,22 @@
 
     </div>
 </div>
+<script>
+  window.$ = window.jQuery = require('jquery');
+</script>
+
+
+<script src="../../bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="../../bower_components/angular/angular.min.js"></script>
+<script src="../../bower_components/angular-datatables/dist/angular-datatables.min.js"></script>
 
 <script>
+  /*window.$ = window.jQuery = require('jquery');
+  require('datatables.net');
+
   require('angular');
   require('angular-ui-bootstrap');
+  require('angular-datatables');*/
   require('../app/index.js');
 </script>
 </body>
