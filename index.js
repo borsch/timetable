@@ -55,7 +55,7 @@ ipcMain.on('save-dialog', function (event) {
   const options = {
     title: 'Save the schedule',
     filters: [
-      { name: 'JSON', extensions: ['json'] }
+      { name: 'xlsx', extensions: ['xlsx'] }
     ]
   };
   dialog.showSaveDialog(options, function (filename) {

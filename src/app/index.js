@@ -138,9 +138,7 @@ const timeTableApp = angular.module('timeTableApp', [tabs, 'datatables']).contro
       /*const json = timetableParser.process_timetable(selectedPath).then((json) => {
         export_json_to_file(json, path);
       })*/
-      timetableExporter.timetablesToXls($scope.timetables, path).then((smth) => {
-        console.dir(smth)
-      });
+      timetableExporter.timetablesToXls(_.cloneDeep($scope.timetables), path);
       //export_json_to_file($scope.timetables, );
     }
   });

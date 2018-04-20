@@ -67,15 +67,19 @@ class TimetableExporter {
     ws.cell(1, 4, 1, 3 + internals.NUMBER_OF_WEEKS, true).string('Тижні');
 
     ws.cell(2, 1).string('День, \nЧас');
+    ws.column(1).setWidth(15);
     ws.cell(2, 2).string('Ауд');
+    ws.column(2).setWidth(15);
     ws.cell(2, 3).string('Викладач');
+    ws.column(3).setWidth(25);
     for (let i = 0; i < internals.NUMBER_OF_WEEKS; i++) {
       ws.column(i + 4).group(1);
       ws.cell(2, i + 4).string(`${i + 1} т.`).style(style);
+      ws.column(i + 4).setWidth(20);
     }
     ws.row(2).setHeight(30);
 
-    const timetableAll = [];
+    let timetableAll = [];
     internals.DAYS.forEach((day) => {
       internals.TIME.forEach((time) => {
         internals.CLASSROOMS.forEach((classRoom) => {
@@ -96,6 +100,7 @@ class TimetableExporter {
               }
             });
           });
+
           const id = `${day}, \n${time}`;
 
           const dayTime = {
@@ -110,18 +115,39 @@ class TimetableExporter {
       });
     });
 
-    for(let i = 0; i < timetableAll.length; i++) {
-      const dataTime = timetableAll[i];
-      const row = i + 3;
-      ws.cell(row, 1).string(dataTime.id);
-      ws.cell(row, 2).string(dataTime.classRoom);
-      /*dayTime.dayTimeEntries.forEach((dayTimeEntry) => {
-        for (let i = 0; i < internals.NUMBER_OF_WEEKS; i++) {
-          ws.column(i + 4).group(1);
-          ws.cell(2, i + 4).string(`${i + 1} т.`).style(style);
+    timetableAll = _.uniqBy(timetableAll, 'id');
+
+    let startRow = 3;
+    for (let i = 0; i < timetableAll.length; i++) {
+
+      const dayTime = timetableAll[i];
+      const row = startRow;
+
+      if (dayTime.dayTimeEntries.length) {
+        ws.cell(row, 1, row + dayTime.dayTimeEntries.length, 1, true).string(dayTime.id);
+        ws.cell(row, 2, row + dayTime.dayTimeEntries.length, 2, true).string(dayTime.classRoom);
+        ws.row(row).setHeight(30 * dayTime.dayTimeEntries.length);
+
+        for (let j = 0; j < dayTime.dayTimeEntries.length; j++) {
+
+          ws.cell(row + j, 3).string(dayTime.dayTimeEntries[j].teacher);
+
+          for (let k = 0; k < dayTime.dayTimeEntries[j].weeks_bool.length; k++) {
+            if (dayTime.dayTimeEntries[j].weeks_bool[k]) {
+              ws.cell(row + j, 4 + k).string(`${dayTime.dayTimeEntries[j].type} ${dayTime.dayTimeEntries[j].group} `);
+
+            }
+          }
+
+          startRow += dayTime.dayTimeEntries.length;
         }
-        ws.row(2).setHeight(30);
-      });*/
+      } else {
+        ws.cell(row, 1, row, 1, true).string(dayTime.id);
+        ws.cell(row, 2, row, 2, true).string(dayTime.classRoom);
+        ws.row(row).setHeight(30);
+        startRow += 1;
+      }
+
     }
 
 
@@ -131,3 +157,35 @@ class TimetableExporter {
 }
 
 module.exports = TimetableExporter;
+
+
+/*
+*
+    timetableAll = _.uniqBy(timetableAll, 'id');
+
+    let startRow = 3;
+    for (let i = 0; i < timetableAll.length; i++) {
+
+      const dayTime = timetableAll[i];
+      const row = startRow;
+      ws.cell(row, 1, row + dayTime.dayTimeEntries.length, 1, true).string(dayTime.id);
+      ws.cell(row, 2, row + dayTime.dayTimeEntries.length, 2, true).string(dayTime.classRoom);
+      ws.row(row).setHeight(30 * dayTime.dayTimeEntries.length);
+
+      for (let j = 0; j < dayTime.dayTimeEntries.length; j++) {
+
+        ws.cell(row + j, 3).string(dayTime.dayTimeEntries[j].teacher);
+
+        for (let k = 0; k < dayTime.dayTimeEntries[j].weeks_bool.length; k++) {
+          if (dayTime.dayTimeEntries[j].weeks_bool[k]) {
+            ws.cell(row + j, 4 + k).string(`${dayTime.dayTimeEntries[j].type} ${dayTime.dayTimeEntries[j].group} `);
+
+          }
+        }
+
+        startRow += dayTime.dayTimeEntries.length;
+      }
+    }
+
+*
+* */
