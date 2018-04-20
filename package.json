@@ -33,6 +33,7 @@
     "jsonfile": "^4.0.0",
     "mammoth": "^1.4.4",
     "node-xlsx": "^0.11.2",
+    "seraph": "^0.15.3",
     "seraph-model": "^0.10.1",
     "tabletojson": "^0.7.1"
   }
